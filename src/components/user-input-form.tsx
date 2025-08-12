@@ -38,7 +38,7 @@ const formSchema = z.object({
   }),
   birthTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'HH:mm 형식으로 입력해주세요.'),
   birthLocation: z.string().min(1, '태어난 장소를 입력해주세요.'),
-  photo: z.any().refine(file => file instanceof File, '사진을 업로드해주세요.'),
+  photo: z.any().refine((files) => files?.length === 1, '사진을 업로드해주세요.'),
 });
 
 type UserInputFormProps = {
@@ -49,8 +49,7 @@ export function UserInputForm({ onSubmit }: UserInputFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fileName, setFileName] = useState('');
   const { toast } = useToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,11 +59,25 @@ export function UserInputForm({ onSubmit }: UserInputFormProps) {
     },
   });
 
+  const photoRef = form.register('photo');
+
   const processSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     
+    const photoFile = values.photo[0];
+
+    if (photoFile.size > 4 * 1024 * 1024) { // 4MB limit
+      toast({
+        variant: "destructive",
+        title: "파일 크기 초과",
+        description: "사진 파일은 4MB를 초과할 수 없습니다.",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     const reader = new FileReader();
-    reader.readAsDataURL(values.photo);
+    reader.readAsDataURL(photoFile);
     reader.onload = () => {
       if (typeof reader.result !== 'string') {
         toast({
@@ -206,42 +219,33 @@ export function UserInputForm({ onSubmit }: UserInputFormProps) {
               <FormField
                 control={form.control}
                 name="photo"
-                render={({ field: { onChange, value, ...rest } }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>정면 사진 업로드</FormLabel>
                     <FormControl>
-                      <div>
+                      <div className="flex items-center gap-2">
                         <Input
                           type="file"
                           accept="image/png, image/jpeg, image/webp"
                           className="hidden"
-                          ref={fileInputRef}
-                          onChange={(event) => {
-                            const file = event.target.files?.[0];
-                            if (file) {
-                              if (file.size > 4 * 1024 * 1024) { // 4MB limit
-                                toast({
-                                  variant: "destructive",
-                                  title: "파일 크기 초과",
-                                  description: "사진 파일은 4MB를 초과할 수 없습니다.",
-                                });
-                                return;
-                              }
-                              onChange(file);
-                              setFileName(file.name);
-                            }
-                          }}
-                          {...rest}
+                          id="photo-upload"
+                          {...photoRef}
+                           onChange={(e) => {
+                              field.onChange(e.target.files);
+                              setFileName(e.target.files?.[0]?.name || '');
+                           }}
                         />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="w-full"
-                          onClick={() => fileInputRef.current?.click()}
-                        >
-                          <Upload className="mr-2 h-4 w-4" />
-                          <span>{fileName || '사진 파일 선택'}</span>
-                        </Button>
+                        <label htmlFor="photo-upload" className="flex-grow">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="w-full justify-start"
+                            onClick={() => document.getElementById('photo-upload')?.click()}
+                          >
+                            <Upload className="mr-2 h-4 w-4" />
+                            <span>{fileName || '사진 파일 선택'}</span>
+                          </Button>
+                        </label>
                       </div>
                     </FormControl>
                     <FormMessage />
