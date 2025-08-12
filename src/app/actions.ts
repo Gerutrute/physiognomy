@@ -23,7 +23,7 @@ export async function getAstrologyReport(
       throw new Error('Failed to get match result');
     }
 
-    // Handle face recognition failure case gracefully
+    // 얼굴 인식이 실패하더라도 다른 데이터는 계속 진행
     if (matchResult.celebrityMatch === '얼굴 인식 불가') {
        return {
         match: matchResult,
