@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowLeft, Instagram, Share2 } from 'lucide-react';
+import { ArrowLeft, BrainCircuit, Instagram, Share2 } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -18,6 +18,11 @@ import {
   Cell,
   PieChart,
   Pie,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
 } from 'recharts';
 import {
   ChartContainer,
@@ -33,6 +38,10 @@ const chartConfig = {
   value: {
     label: 'Value',
   },
+  score: {
+    label: 'Score',
+    color: 'hsl(var(--accent))',
+  }
 };
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#0088fe', '#00c49f', '#ffbb28'];
@@ -87,6 +96,12 @@ export function ResultsDisplay({ data, onReset }: ResultsDisplayProps) {
   const getInitials = (name: string) => name ? name.charAt(0).toUpperCase() : '?';
 
   const isFaceRecognitionFailure = data.match.celebrityMatch === '얼굴 인식 불가';
+
+  const personalityData = data.mlAnalysis?.personalityAnalysis.map(item => ({
+      subject: item.trait,
+      score: item.score,
+      fullMark: 100,
+  }));
 
   return (
     <div className="container mx-auto max-w-4xl py-8 md:py-12">
@@ -177,6 +192,49 @@ export function ResultsDisplay({ data, onReset }: ResultsDisplayProps) {
               </CardFooter>
             </Card>
           </>
+        )}
+
+        {/* ML Analysis Card */}
+        {data.mlAnalysis && personalityData && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-headline text-2xl text-primary flex items-center gap-2">
+                <BrainCircuit />
+                ML 성격 & 성공 분석 리포트
+              </CardTitle>
+              <CardDescription>
+                AI 머신러닝이 당신의 성격 특성과 성공 가능성을 분석했습니다.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <h4 className="font-bold text-center mb-2 text-muted-foreground">Big 5 성격 특성</h4>
+                <ChartContainer config={chartConfig} className="w-full h-[250px]">
+                  <ResponsiveContainer>
+                    <RadarChart data={personalityData}>
+                      <PolarGrid />
+                      <PolarAngleAxis dataKey="subject" />
+                      <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                      <Radar name="Score" dataKey="score" stroke="hsl(var(--accent))" fill="hsl(var(--accent))" fillOpacity={0.6} />
+                      <ChartTooltipContent />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </div>
+              <div className="space-y-4">
+                  {data.mlAnalysis.personalityAnalysis.map((trait) => (
+                      <div key={trait.trait}>
+                          <p className="font-bold">{trait.trait} ({trait.score}점)</p>
+                          <p className="text-sm text-muted-foreground">{trait.description}</p>
+                      </div>
+                  ))}
+              </div>
+            </CardContent>
+             <CardFooter className="flex-col items-start gap-2 pt-4 border-t mt-4">
+                  <h4 className="font-bold text-muted-foreground">성공 경로 예측</h4>
+                  <p className="text-lg text-primary">{data.mlAnalysis.successPrediction}</p>
+              </CardFooter>
+          </Card>
         )}
 
         {/* Share Card */}
