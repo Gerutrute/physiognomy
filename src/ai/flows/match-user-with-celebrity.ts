@@ -38,24 +38,25 @@ const prompt = ai.definePrompt({
   name: 'matchUserWithCelebrityPrompt',
   input: {schema: MatchUserWithCelebrityInputSchema},
   output: {schema: MatchUserWithCelebrityOutputSchema},
-  prompt: `You are an AI that matches users with celebrities based on their photo and birth information. The output must be in Korean.
+  prompt: `You are an AI that finds the Korean celebrity that most resembles the person in the photo.
 
-Analyze the user's photo to identify a face. Compare the identified facial features to a database of celebrity faces.
-Consider personality traits derived from the user's astrology data (birth date, time, and location).
-Evaluate overall fortune patterns based on astrological data.
-Calculate an overall match score based on facial features, personality traits, and fortune patterns.
-Find a publicly available, high-quality photo URL for the matched celebrity.
-
-If you cannot detect a face, you should try your best to find a match. If it is absolutely impossible, return "얼굴 인식 불가" for the celebrityMatch, 0 for the matchPercentage, an explanation in fortuneSimilarity, and a placeholder image for celebrityPhotoUrl.
+Based on the provided user photo and their birth information, find the Korean celebrity who looks the most similar to the user.
+Also consider the user's astrological data (birth date, time, and location) to find similarities in their fortune patterns.
 
 User Photo: {{media url=photoDataUri}}
 Birth Date: {{{birthDate}}}
 Birth Time: {{{birthTime}}}
 Birth Location: {{{birthLocation}}}
 
-Based on this information, determine the celebrity the user is most like and provide a match percentage, a description of the similarities in their fortune patterns in Korean, and the celebrity's photo URL.
+Your task is to:
+1. Identify the Korean celebrity that most closely resembles the person in the photo.
+2. Calculate a match percentage based on visual and astrological similarities.
+3. Provide a description of the similarities in their fortune patterns, in Korean.
+4. Find a high-quality, publicly available photo URL for the matched celebrity.
 
-Return the celebrityMatch, matchPercentage, fortuneSimilarity, and celebrityPhotoUrl in the proper JSON format.
+If for any reason you absolutely cannot find a match, return "얼굴 인식 불가" for celebrityMatch, 0 for matchPercentage, an explanatory message in fortuneSimilarity, and a placeholder image URL for celebrityPhotoUrl.
+
+Provide the response in the specified JSON format.
 `,
 });
 
