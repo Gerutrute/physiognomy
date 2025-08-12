@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker, DropdownProps } from "react-day-picker"
+import { DayPicker, DropdownProps, useDayPicker, useNavigation } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
@@ -65,8 +65,9 @@ function Calendar({
         ),
         Dropdown: (props: DropdownProps) => {
           const { fromDate, fromMonth, fromYear, toDate, toMonth, toYear } =
-            props;
-          const { goToMonth, month } = props;
+            useDayPicker();
+          const { goToMonth, currentMonth: month } = useNavigation();
+
           if (props.name === "months") {
             const months = Array.from({ length: 12 }, (_, i) => {
               return new Date(1970, i, 1);
