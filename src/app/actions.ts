@@ -11,14 +11,21 @@ export async function getAstrologyReport(
   try {
     const birthDateStr = format(userInput.birthDate, 'yyyy-MM-dd');
 
-    let matchResult = await matchUserWithCelebrity({
-      photoDataUri: userInput.photoDataUri,
-      birthDate: birthDateStr,
-      birthTime: userInput.birthTime,
-      birthLocation: userInput.birthLocation,
-    });
+    let matchResult;
+    try {
+      matchResult = await matchUserWithCelebrity({
+        photoDataUri: userInput.photoDataUri,
+        birthDate: birthDateStr,
+        birthTime: userInput.birthTime,
+        birthLocation: userInput.birthLocation,
+      });
+    } catch (error) {
+        console.error('Error in matchUserWithCelebrity flow:', error);
+        matchResult = null; // Mark as failed
+    }
+    
 
-    // matchUserWithCelebrity가 실패하여 null을 반환하면 얼굴 인식 실패로 간주하고 기본값을 채웁니다.
+    // matchUserWithCelebrity가 실패했거나 null을 반환하면 얼굴 인식 실패로 간주하고 기본값을 채웁니다.
     if (!matchResult) {
       console.error('Failed to get match result from AI. Treating as face recognition failure.');
       matchResult = {
@@ -35,18 +42,24 @@ export async function getAstrologyReport(
     if (isFaceRecognitionFailure) {
         return {
             match: matchResult,
-            visualizations: null, // 시각화 데이터는 없음
+            visualizations: null,
             userInput,
         }
     }
 
     // 얼굴 인식이 성공했을 때만 시각화 데이터를 요청합니다.
-    const vizResult = await generateAstrologicalVisualizations({
-      birthDate: birthDateStr,
-      birthTime: userInput.birthTime,
-      birthLocation: userInput.birthLocation,
-      matchedCelebrity: matchResult.celebrityMatch,
-    });
+    let vizResult = null;
+    try {
+        vizResult = await generateAstrologicalVisualizations({
+            birthDate: birthDateStr,
+            birthTime: userInput.birthTime,
+            birthLocation: userInput.birthLocation,
+            matchedCelebrity: matchResult.celebrityMatch,
+        });
+    } catch(error) {
+        console.error('Error in generateAstrologicalVisualizations flow:', error);
+        vizResult = null; // Mark as failed
+    }
 
     // 시각화 데이터 생성에 실패하더라도, 매칭 결과는 보여주기 위해 null 대신 기본 객체를 반환합니다.
     if (!vizResult) {
