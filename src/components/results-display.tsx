@@ -142,7 +142,7 @@ export function ResultsDisplay({ data, onReset }: ResultsDisplayProps) {
              </CardDescription>
            </CardHeader>
            <CardContent className="text-lg leading-relaxed prose prose-p:text-foreground">
-             <p>{data.interpretation.interpretation}</p>
+             <p>{data.visualizations.interpretation}</p>
            </CardContent>
         </Card>
         
