@@ -29,8 +29,8 @@ export async function getAstrologyReport(
       };
     }
     
-    // 얼굴 인식이 실패한 경우, 여기서 처리를 중단하고 결과를 반환하여
-    // 프론트엔드에서 사용자에게 알릴 수 있도록 합니다.
+    // 얼굴 인식이 실패한 경우(API가 '얼굴 인식 불가'를 명시적으로 반환하거나, API 호출 자체가 실패한 경우), 
+    // 여기서 처리를 중단하고 부분적인 결과만 반환합니다.
     const isFaceRecognitionFailure = matchResult.celebrityMatch === '얼굴 인식 불가';
     if (isFaceRecognitionFailure) {
         return {
@@ -40,6 +40,7 @@ export async function getAstrologyReport(
         }
     }
 
+    // 얼굴 인식이 성공했을 때만 시각화 데이터를 요청합니다.
     const vizResult = await generateAstrologicalVisualizations({
       birthDate: birthDateStr,
       birthTime: userInput.birthTime,
@@ -47,9 +48,9 @@ export async function getAstrologyReport(
       matchedCelebrity: matchResult.celebrityMatch,
     });
 
+    // 시각화 데이터 생성에 실패하더라도, 매칭 결과는 보여주기 위해 null 대신 기본 객체를 반환합니다.
     if (!vizResult) {
         console.error('Failed to get visualization result from AI.');
-        // 시각화 데이터 생성에 실패하더라도 매칭 결과는 보여줍니다.
         return {
           match: matchResult,
           visualizations: null,
@@ -57,6 +58,7 @@ export async function getAstrologyReport(
         };
     }
     
+    // 모든 데이터가 성공적으로 생성된 경우
     return {
       match: matchResult,
       visualizations: vizResult,
@@ -65,6 +67,7 @@ export async function getAstrologyReport(
 
   } catch (error) {
     console.error('Error generating astrology report:', error);
+    // 예기치 않은 최상위 오류 발생 시 null 반환
     return null;
   }
 }
