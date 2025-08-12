@@ -21,9 +21,6 @@ const GenerateAstrologicalVisualizationsInputSchema = z.object({
   birthLocation: z
     .string()
     .describe('The user birth location (e.g., city, country).'),
-  interests: z
-    .string()
-    .describe('Comma separated list of user interests (e.g., music, sports, technology).'),
 });
 export type GenerateAstrologicalVisualizationsInput = z.infer<
   typeof GenerateAstrologicalVisualizationsInputSchema
@@ -57,7 +54,7 @@ const GenerateAstrologicalVisualizationsOutputSchema = z.object({
   careerPersona: z
     .string()
     .describe(
-      'A description of a suitable career persona (e.g., actor, musician, athlete) based on the user interests.'
+      'A description of a suitable career persona (e.g., actor, musician, athlete) based on the user astrological data.'
     ),
 });
 export type GenerateAstrologicalVisualizationsOutput = z.infer<
@@ -74,19 +71,18 @@ const prompt = ai.definePrompt({
   name: 'generateAstrologicalVisualizationsPrompt',
   input: {schema: GenerateAstrologicalVisualizationsInputSchema},
   output: {schema: GenerateAstrologicalVisualizationsOutputSchema},
-  prompt: `Given the astrological data and interests of a user, generate visually appealing graphs and a career persona.
+  prompt: `Given the astrological data of a user, generate visually appealing graphs and a career persona.
 
 User Birth Date: {{{birthDate}}}
 User Birth Time: {{{birthTime}}}
 User Birth Location: {{{birthLocation}}}
-User Interests: {{{interests}}}
 
 Instructions:
 1.  Generate a fortune curve graph visualizing the user fortune trend over time.  Return the graph as a data URI.
 2.  Generate a wealth index graph indicating the user potential for wealth.  Return the graph as a data URI.
 3.  Generate an affection index graph indicating the user potential for affection and relationships. Return the graph as a data URI.
 4.  Generate a health index graph indicating the user potential for health and well-being. Return the graph as a data URI.
-5.  Based on the user interests, suggest a suitable career persona (e.g., actor, musician, athlete).
+5.  Based on the user's astrological data, suggest a suitable career persona (e.g., actor, musician, athlete).
 
 Output the results in the following JSON format:
 {

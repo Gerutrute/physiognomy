@@ -14,8 +14,6 @@ const InterpretAstrologicalDataInputSchema = z.object({
   birthDate: z.string().describe('The user\u0027s birth date (YYYY-MM-DD).'),
   birthTime: z.string().describe('The user\u0027s birth time (HH:MM).'),
   birthLocation: z.string().describe('The user\u0027s birth location.'),
-  gender: z.string().describe('The user\u0027s gender.'),
-  interests: z.string().describe('The user\u0027s interests.'),
   matchedCelebrity: z.string().describe('The name of the matched celebrity.'),
   celebrityAstrologicalData: z.string().describe('The astrological data of the matched celebrity.'),
   userAstrologicalData: z.string().describe('The user\u0027s astrological data.'),
@@ -40,8 +38,6 @@ const prompt = ai.definePrompt({
 User Birth Date: {{{birthDate}}}
 User Birth Time: {{{birthTime}}}
 User Birth Location: {{{birthLocation}}}
-User Gender: {{{gender}}}
-User Interests: {{{interests}}}
 Matched Celebrity: {{{matchedCelebrity}}}
 Celebrity Astrological Data: {{{celebrityAstrologicalData}}}
 User Astrological Data: {{{userAstrologicalData}}}

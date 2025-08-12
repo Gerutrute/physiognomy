@@ -7,10 +7,7 @@ export type UserInput = {
   birthDate: Date;
   birthTime: string;
   birthLocation: string;
-  gender: 'male' | 'female' | 'other';
   photoDataUri: string;
-  favoriteCelebrity: string;
-  interests: string;
 };
 
 export type ReportData = {

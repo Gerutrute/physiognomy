@@ -19,7 +19,6 @@ const MatchUserWithCelebrityInputSchema = z.object({
   birthDate: z.string().describe('The user\'s birth date (YYYY-MM-DD).'),
   birthTime: z.string().describe('The user\'s birth time (HH:MM).'),
   birthLocation: z.string().describe('The user\'s birth location.'),
-  favoriteCelebrity: z.string().describe('The user\'s favorite celebrity.'),
 });
 export type MatchUserWithCelebrityInput = z.infer<typeof MatchUserWithCelebrityInputSchema>;
 
@@ -38,7 +37,7 @@ const prompt = ai.definePrompt({
   name: 'matchUserWithCelebrityPrompt',
   input: {schema: MatchUserWithCelebrityInputSchema},
   output: {schema: MatchUserWithCelebrityOutputSchema},
-  prompt: `You are an AI that matches users with celebrities based on their photo, birth information, and favorite celebrity.
+  prompt: `You are an AI that matches users with celebrities based on their photo and birth information.
 
 Analyze the user's photo and compare their facial features to a database of celebrity faces.
 Consider personality traits derived from the user's astrology data (birth date, time, and location).
@@ -49,7 +48,6 @@ User Photo: {{media url=photoDataUri}}
 Birth Date: {{{birthDate}}}
 Birth Time: {{{birthTime}}}
 Birth Location: {{{birthLocation}}}
-Favorite Celebrity: {{{favoriteCelebrity}}}
 
 Based on this information, determine the celebrity the user is most like and provide a match percentage and a description of the similarities in their fortune patterns.
 

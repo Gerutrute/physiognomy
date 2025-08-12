@@ -4,7 +4,6 @@ import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { CalendarIcon, Loader2, Upload } from 'lucide-react';
 
@@ -19,13 +18,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   Card,
   CardContent,
@@ -46,12 +38,7 @@ const formSchema = z.object({
   }),
   birthTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'HH:mm 형식으로 입력해주세요.'),
   birthLocation: z.string().min(1, '태어난 장소를 입력해주세요.'),
-  gender: z.enum(['male', 'female', 'other'], {
-    required_error: '성별을 선택해주세요.',
-  }),
   photo: z.any().refine(file => file instanceof File, '사진을 업로드해주세요.'),
-  favoriteCelebrity: z.string().min(1, '좋아하는 연예인을 입력해주세요.'),
-  interests: z.string().min(1, '관심사를 입력해주세요. (예: 음악, 스포츠)'),
 });
 
 type UserInputFormProps = {
@@ -70,8 +57,6 @@ export function UserInputForm({ onSubmit }: UserInputFormProps) {
       name: '',
       birthTime: '12:00',
       birthLocation: '',
-      favoriteCelebrity: '',
-      interests: '',
     },
   });
 
@@ -96,10 +81,7 @@ export function UserInputForm({ onSubmit }: UserInputFormProps) {
         birthDate: values.birthDate,
         birthTime: values.birthTime,
         birthLocation: values.birthLocation,
-        gender: values.gender,
         photoDataUri: reader.result,
-        favoriteCelebrity: values.favoriteCelebrity,
-        interests: values.interests,
       };
       onSubmit(userInput);
     };
@@ -133,44 +115,20 @@ export function UserInputForm({ onSubmit }: UserInputFormProps) {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(processSubmit)} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>이름</FormLabel>
-                      <FormControl>
-                        <Input placeholder="홍길동" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <FormField
-                  control={form.control}
-                  name="gender"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>성별</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="성별 선택" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="male">남성</SelectItem>
-                          <SelectItem value="female">여성</SelectItem>
-                          <SelectItem value="other">기타</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>이름</FormLabel>
+                    <FormControl>
+                      <Input placeholder="홍길동" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
               <div className="grid md:grid-cols-2 gap-6">
                  <FormField
                   control={form.control}
@@ -245,35 +203,6 @@ export function UserInputForm({ onSubmit }: UserInputFormProps) {
                 )}
               />
 
-              <div className="grid md:grid-cols-2 gap-6">
-                 <FormField
-                  control={form.control}
-                  name="favoriteCelebrity"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>좋아하는 연예인</FormLabel>
-                      <FormControl>
-                        <Input placeholder="예: 아이유" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="interests"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>나의 관심사</FormLabel>
-                      <FormControl>
-                        <Input placeholder="예: 음악, 영화, 여행" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
               <FormField
                 control={form.control}
                 name="photo"
@@ -282,7 +211,7 @@ export function UserInputForm({ onSubmit }: UserInputFormProps) {
                     <FormLabel>정면 사진 업로드</FormLabel>
                     <FormControl>
                       <div>
-                        <input
+                        <Input
                           type="file"
                           accept="image/png, image/jpeg, image/webp"
                           className="hidden"

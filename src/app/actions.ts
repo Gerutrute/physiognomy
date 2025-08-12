@@ -18,13 +18,11 @@ export async function getAstrologyReport(
         birthDate: birthDateStr,
         birthTime: userInput.birthTime,
         birthLocation: userInput.birthLocation,
-        favoriteCelebrity: userInput.favoriteCelebrity,
       }),
       generateAstrologicalVisualizations({
         birthDate: birthDateStr,
         birthTime: userInput.birthTime,
         birthLocation: userInput.birthLocation,
-        interests: userInput.interests,
       }),
     ]);
 
@@ -36,8 +34,6 @@ export async function getAstrologyReport(
       birthDate: birthDateStr,
       birthTime: userInput.birthTime,
       birthLocation: userInput.birthLocation,
-      gender: userInput.gender,
-      interests: userInput.interests,
       matchedCelebrity: matchResult.celebrityMatch,
       // These are placeholders as the AI flows don't provide this detailed data.
       // The prompt is flexible enough to handle this.
