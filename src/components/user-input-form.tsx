@@ -281,7 +281,7 @@ export function UserInputForm({ onSubmit }: UserInputFormProps) {
                   <FormItem>
                     <FormLabel>정면 사진 업로드</FormLabel>
                     <FormControl>
-                      <>
+                      <div>
                         <input
                           type="file"
                           accept="image/png, image/jpeg, image/webp"
@@ -313,7 +313,7 @@ export function UserInputForm({ onSubmit }: UserInputFormProps) {
                           <Upload className="mr-2 h-4 w-4" />
                           <span>{fileName || '사진 파일 선택'}</span>
                         </Button>
-                      </>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
