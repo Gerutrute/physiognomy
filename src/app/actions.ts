@@ -22,15 +22,10 @@ export async function getAstrologyReport(
       });
     } catch (error) {
         console.error('Error in matchUserWithCelebrity flow:', error);
-        matchResult = {
-            celebrityMatch: '얼굴 인식 불가',
-            matchPercentage: 0,
-            fortuneSimilarity: '사진에서 얼굴을 찾을 수 없거나 분석 중 오류가 발생했습니다. 다른 사진으로 시도해 보세요.',
-            celebrityPhotoUrl: 'https://placehold.co/400x400.png'
-        };
+        matchResult = null; // Set to null on error
     }
     
-    // If matching explicitly fails, create a default "failure" object
+    // If matching failed or returned null, create a default "failure" object
     if (!matchResult || matchResult.celebrityMatch === '얼굴 인식 불가') {
       matchResult = {
         celebrityMatch: '얼굴 인식 불가',
@@ -40,19 +35,19 @@ export async function getAstrologyReport(
       };
     }
 
-    // Generate visualizations regardless of match success
+    // Always attempt to generate visualizations and ML analysis
     let vizResult = null;
     try {
         vizResult = await generateAstrologicalVisualizations({
             birthDate: birthDateStr,
             birthTime: userInput.birthTime,
             birthLocation: userInput.birthLocation,
+            // Use an empty string if match failed, so the prompt can handle it
             matchedCelebrity: matchResult.celebrityMatch === '얼굴 인식 불가' ? '' : matchResult.celebrityMatch,
         });
     } catch(error) {
         console.error('Error in generateAstrologicalVisualizations flow:', error);
         // We can continue without this data, so we just log the error and let vizResult be null.
-        vizResult = null;
     }
 
     let mlResult = null;
@@ -64,11 +59,14 @@ export async function getAstrologyReport(
     } catch(error) {
         console.error('Error in performMlAnalysis flow:', error);
         // We can continue without this data, so we just log the error and let mlResult be null.
-        mlResult = null;
     }
 
+    // Return a result object as long as at least one of the analysis parts succeeded.
+    if (!vizResult && !mlResult && matchResult.celebrityMatch === '얼굴 인식 불가') {
+        console.error('All AI flows failed.');
+        return null;
+    }
 
-    // Always return a result object. The UI will adapt based on what data is available.
     return {
       match: matchResult,
       visualizations: vizResult,

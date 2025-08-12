@@ -33,15 +33,6 @@ export default function Home() {
           });
         }
 
-        // Notify user if visualization data failed but we have a match.
-        if (!isFaceRecognitionFailure && !result.visualizations) {
-            toast({
-                variant: 'default',
-                title: '부분 결과 생성',
-                description: '점성술 데이터를 생성하는 데 실패했습니다. 연예인 매칭 결과만 표시합니다.',
-            });
-        }
-
         setReportData(result);
         setView('results');
 

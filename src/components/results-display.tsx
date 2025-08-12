@@ -95,7 +95,7 @@ const StatChart = ({ title, data, type }: { title: string; data: { label: string
 export function ResultsDisplay({ data, onReset }: ResultsDisplayProps) {
   const getInitials = (name: string) => name ? name.charAt(0).toUpperCase() : '?';
 
-  const isFaceRecognitionFailure = data.match.celebrityMatch === '얼굴 인식 불가';
+  const isFaceRecognitionFailure = !data.match || data.match.celebrityMatch === '얼굴 인식 불가';
 
   const personalityData = data.mlAnalysis?.personalityAnalysis.map(item => ({
       subject: item.trait,
@@ -112,7 +112,7 @@ export function ResultsDisplay({ data, onReset }: ResultsDisplayProps) {
 
       <div className="space-y-8">
         {/* Celebrity Match Card */}
-        {!isFaceRecognitionFailure && (
+        {!isFaceRecognitionFailure && data.match && (
           <Card className="overflow-hidden shadow-lg">
             <CardHeader className="text-center">
               <CardTitle className="font-headline text-3xl md:text-4xl text-primary">
@@ -159,7 +159,7 @@ export function ResultsDisplay({ data, onReset }: ResultsDisplayProps) {
                     📖 당신의 운명 이야기
                  </CardTitle>
                  <CardDescription>
-                    {isFaceRecognitionFailure 
+                    {isFaceRecognitionFailure || !data.match
                       ? "AI 점성술사가 당신의 운명을 해석했습니다."
                       : `AI 점성술사가 ${data.match.celebrityMatch}님과의 비교를 통해 당신의 운명을 해석했습니다.`
                     }
