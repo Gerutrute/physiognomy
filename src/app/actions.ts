@@ -11,16 +11,22 @@ export async function getAstrologyReport(
   try {
     const birthDateStr = format(userInput.birthDate, 'yyyy-MM-dd');
 
-    const matchResult = await matchUserWithCelebrity({
+    let matchResult = await matchUserWithCelebrity({
       photoDataUri: userInput.photoDataUri,
       birthDate: birthDateStr,
       birthTime: userInput.birthTime,
       birthLocation: userInput.birthLocation,
     });
 
+    // matchUserWithCelebrity가 실패하여 null을 반환하면 얼굴 인식 실패로 간주하고 기본값을 채웁니다.
     if (!matchResult) {
-      console.error('Failed to get match result from AI.');
-      return null;
+      console.error('Failed to get match result from AI. Treating as face recognition failure.');
+      matchResult = {
+        celebrityMatch: '얼굴 인식 불가',
+        matchPercentage: 0,
+        fortuneSimilarity: '사진에서 얼굴을 찾을 수 없거나 분석 중 오류가 발생했습니다. 다른 사진으로 시도해 보세요.',
+        celebrityPhotoUrl: 'https://placehold.co/400x400.png'
+      };
     }
     
     // 얼굴 인식이 실패한 경우, 여기서 처리를 중단하고 결과를 반환하여
@@ -43,7 +49,12 @@ export async function getAstrologyReport(
 
     if (!vizResult) {
         console.error('Failed to get visualization result from AI.');
-        return null;
+        // 시각화 데이터 생성에 실패하더라도 매칭 결과는 보여줍니다.
+        return {
+          match: matchResult,
+          visualizations: null,
+          userInput,
+        };
     }
     
     return {

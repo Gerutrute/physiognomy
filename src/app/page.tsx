@@ -29,13 +29,17 @@ export default function Home() {
             title: '얼굴 인식 실패',
             description: result.match.fortuneSimilarity,
           });
-          setView('form'); // 폼으로 되돌아감
-          return;
+          // 얼굴 인식이 실패해도 결과 화면으로 이동하여 부분적인 결과를 보여줄 수 있습니다.
+          // 또는 폼으로 되돌아가게 할 수 있습니다. 여기서는 결과 화면으로 이동합니다.
         }
 
-        // 시각화 데이터 생성 실패 시 처리 (예: 얼굴 인식은 성공했으나 다음 단계 실패)
+        // 시각화 데이터 생성 실패 시 처리
         if (!result.visualizations) {
-            throw new Error('점성술 데이터를 생성하는 데 실패했습니다. 잠시 후 다시 시도해 주세요.');
+            toast({
+                variant: 'default',
+                title: '부분 결과',
+                description: '점성술 데이터를 생성하는 데 실패했습니다. 연예인 매칭 결과만 표시합니다.',
+            });
         }
 
         setReportData(result);
@@ -70,8 +74,8 @@ export default function Home() {
       </div>
 
       <div className={`w-full transition-opacity duration-500 ${view === 'results' ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
-        {view === 'results' && reportData && reportData.visualizations && (
-          <ResultsDisplay data={{...reportData, visualizations: reportData.visualizations}} onReset={handleReset} />
+        {view === 'results' && reportData && (
+          <ResultsDisplay data={reportData} onReset={handleReset} />
         )}
       </div>
     </div>

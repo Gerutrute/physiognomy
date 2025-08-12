@@ -84,7 +84,7 @@ const StatChart = ({ title, data, type }: { title: string; data: { label: string
 
 
 export function ResultsDisplay({ data, onReset }: ResultsDisplayProps) {
-  const getInitials = (name: string) => name.charAt(0).toUpperCase();
+  const getInitials = (name: string) => name ? name.charAt(0).toUpperCase() : '?';
 
   return (
     <div className="container mx-auto max-w-4xl py-8 md:py-12">
@@ -131,42 +131,46 @@ export function ResultsDisplay({ data, onReset }: ResultsDisplayProps) {
           </CardContent>
         </Card>
 
-        {/* Storytelling Card */}
-        <Card>
-           <CardHeader>
-             <CardTitle className="font-headline text-2xl text-primary">
-                📖 당신의 운명 이야기
-             </CardTitle>
-             <CardDescription>
-                AI 점성술사가 {data.match.celebrityMatch}님과의 비교를 통해 당신의 운명을 해석했습니다.
-             </CardDescription>
-           </CardHeader>
-           <CardContent className="text-lg leading-relaxed prose prose-p:text-foreground">
-             <p>{data.visualizations.interpretation}</p>
-           </CardContent>
-        </Card>
-        
-        {/* Astrological Visualizations Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline text-2xl text-primary">
-              ✨ 당신의 잠재력 지수
-            </CardTitle>
-            <CardDescription>
-              당신의 생년월일시를 기반으로 분석된 다양한 잠재력 지표입니다.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             <StatChart title="운세 곡선" data={data.visualizations.fortuneCurve} type="line" />
-             <StatChart title="재물 지수" data={data.visualizations.wealthIndex} type="bar" />
-             <StatChart title="애정 지수" data={data.visualizations.affectionIndex} type="pie" />
-             <StatChart title="건강 지수" data={data.visualizations.healthIndex} type="bar" />
-          </CardContent>
-          <CardFooter className="flex-col items-start gap-2 pt-4 border-t mt-4">
-              <h4 className="font-bold text-muted-foreground">추천 직업 페르소나</h4>
-              <p className="font-headline text-xl text-accent">{data.visualizations.careerPersona}</p>
-          </CardFooter>
-        </Card>
+        {data.visualizations && (
+          <>
+            {/* Storytelling Card */}
+            <Card>
+               <CardHeader>
+                 <CardTitle className="font-headline text-2xl text-primary">
+                    📖 당신의 운명 이야기
+                 </CardTitle>
+                 <CardDescription>
+                    AI 점성술사가 {data.match.celebrityMatch}님과의 비교를 통해 당신의 운명을 해석했습니다.
+                 </CardDescription>
+               </CardHeader>
+               <CardContent className="text-lg leading-relaxed prose prose-p:text-foreground">
+                 <p>{data.visualizations.interpretation}</p>
+               </CardContent>
+            </Card>
+            
+            {/* Astrological Visualizations Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-headline text-2xl text-primary">
+                  ✨ 당신의 잠재력 지수
+                </CardTitle>
+                <CardDescription>
+                  당신의 생년월일시를 기반으로 분석된 다양한 잠재력 지표입니다.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <StatChart title="운세 곡선" data={data.visualizations.fortuneCurve} type="line" />
+                 <StatChart title="재물 지수" data={data.visualizations.wealthIndex} type="bar" />
+                 <StatChart title="애정 지수" data={data.visualizations.affectionIndex} type="pie" />
+                 <StatChart title="건강 지수" data={data.visualizations.healthIndex} type="bar" />
+              </CardContent>
+              <CardFooter className="flex-col items-start gap-2 pt-4 border-t mt-4">
+                  <h4 className="font-bold text-muted-foreground">추천 직업 페르소나</h4>
+                  <p className="font-headline text-xl text-accent">{data.visualizations.careerPersona}</p>
+              </CardFooter>
+            </Card>
+          </>
+        )}
 
         {/* Share Card */}
         <Card>
