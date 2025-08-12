@@ -33,7 +33,7 @@ export default function Home() {
         setReportData(result);
         setView('results');
       } else {
-        throw new Error('결과를 생성하는 데 실패했습니다. AI 모델이 응답하지 않았습니다.');
+        throw new Error('결과를 생성하는 데 실패했습니다. AI 모델이 응답하지 않았거나 네트워크 문제가 발생했을 수 있습니다. 잠시 후 다시 시도해 주세요.');
       }
     } catch (error) {
       console.error(error);

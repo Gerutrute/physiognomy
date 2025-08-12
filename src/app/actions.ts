@@ -19,7 +19,6 @@ export async function getAstrologyReport(
     });
 
     if (!matchResult) {
-      // Even if match fails, we can proceed if we have a default or allow it
       throw new Error('Failed to get match result');
     }
 
@@ -29,27 +28,19 @@ export async function getAstrologyReport(
       birthDate: birthDateStr,
       birthTime: userInput.birthTime,
       birthLocation: userInput.birthLocation,
-      matchedCelebrity: isFaceRecognitionFailure ? '얼굴 인식 불가' : matchResult.celebrityMatch,
+      matchedCelebrity: isFaceRecognitionFailure ? '' : matchResult.celebrityMatch,
     });
 
     if (!vizResult) {
       throw new Error('Failed to get visualization results');
     }
     
-    // If face recognition failed, we still want to return the other data
-    if (isFaceRecognitionFailure) {
-       return {
-        match: matchResult,
-        visualizations: vizResult,
-        userInput,
-      };
-    }
-
     return {
       match: matchResult,
       visualizations: vizResult,
       userInput,
     };
+
   } catch (error) {
     console.error('Error generating astrology report:', error);
     return null;
