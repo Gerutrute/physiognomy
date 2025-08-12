@@ -12,7 +12,7 @@ export async function getAstrologyReport(
   try {
     const birthDateStr = format(userInput.birthDate, 'yyyy-MM-dd');
 
-    let matchResult;
+    let matchResult = null;
     try {
       matchResult = await matchUserWithCelebrity({
         photoDataUri: userInput.photoDataUri,
@@ -22,7 +22,8 @@ export async function getAstrologyReport(
       });
     } catch (error) {
         console.error('Error in matchUserWithCelebrity flow:', error);
-        matchResult = null; // Set to null on error
+        // Fail gracefully, other analyses can still proceed.
+        matchResult = null;
     }
     
     // If matching failed or returned null, create a default "failure" object
@@ -35,14 +36,12 @@ export async function getAstrologyReport(
       };
     }
 
-    // Always attempt to generate visualizations and ML analysis
     let vizResult = null;
     try {
         vizResult = await generateAstrologicalVisualizations({
             birthDate: birthDateStr,
             birthTime: userInput.birthTime,
             birthLocation: userInput.birthLocation,
-            // Use an empty string if match failed, so the prompt can handle it
             matchedCelebrity: matchResult.celebrityMatch === '얼굴 인식 불가' ? '' : matchResult.celebrityMatch,
         });
     } catch(error) {
@@ -61,9 +60,9 @@ export async function getAstrologyReport(
         // We can continue without this data, so we just log the error and let mlResult be null.
     }
 
-    // Return a result object as long as at least one of the analysis parts succeeded.
+    // Only return null if ALL flows failed.
     if (!vizResult && !mlResult && matchResult.celebrityMatch === '얼굴 인식 불가') {
-        console.error('All AI flows failed.');
+        console.error('All AI flows failed to produce any data.');
         return null;
     }
 
