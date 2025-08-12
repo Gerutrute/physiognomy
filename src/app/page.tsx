@@ -24,7 +24,7 @@ export default function Home() {
       if (result) {
         const isFaceRecognitionFailure = result.match.celebrityMatch === '얼굴 인식 불가';
         
-        // Notify user on face recognition failure.
+        // Notify user on face recognition failure, but still proceed to results.
         if (isFaceRecognitionFailure) {
           toast({
             variant: 'destructive',

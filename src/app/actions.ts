@@ -23,9 +23,9 @@ export async function getAstrologyReport(
         console.error('Error in matchUserWithCelebrity flow:', error);
         matchResult = null; // Mark as failed
     }
-    
-    // If matching fails for any reason, create a default "failure" object
-    if (!matchResult) {
+
+    // If matching fails, create a default "failure" object
+    if (!matchResult || matchResult.celebrityMatch === '얼굴 인식 불가') {
       matchResult = {
         celebrityMatch: '얼굴 인식 불가',
         matchPercentage: 0,
@@ -33,36 +33,30 @@ export async function getAstrologyReport(
         celebrityPhotoUrl: 'https://placehold.co/400x400.png'
       };
     }
-    
-    const isFaceRecognitionFailure = matchResult.celebrityMatch === '얼굴 인식 불가';
 
-    // Generate visualizations
+    // Generate visualizations regardless of match success
     let vizResult = null;
     try {
         vizResult = await generateAstrologicalVisualizations({
             birthDate: birthDateStr,
             birthTime: userInput.birthTime,
             birthLocation: userInput.birthLocation,
-            // Pass celebrity name if successful, otherwise empty string
-            matchedCelebrity: isFaceRecognitionFailure ? '' : matchResult.celebrityMatch,
+            matchedCelebrity: matchResult.celebrityMatch === '얼굴 인식 불가' ? '' : matchResult.celebrityMatch,
         });
     } catch(error) {
         console.error('Error in generateAstrologicalVisualizations flow:', error);
-        // Do not crash the app, visualizations can be null.
-        // The UI will handle the case where vizResult is null.
         vizResult = null;
     }
-    
-    // Always return a result object, even if parts of it failed.
+
+    // Always return a result object. The UI will adapt based on what data is available.
     return {
       match: matchResult,
-      visualizations: vizResult, // This can be null
+      visualizations: vizResult,
       userInput,
     };
 
   } catch (error) {
     console.error('Critical error in getAstrologyReport:', error);
-    // This top-level catch is for truly unexpected errors.
     return null;
   }
 }
