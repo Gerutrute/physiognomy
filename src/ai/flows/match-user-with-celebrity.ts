@@ -40,17 +40,13 @@ const prompt = ai.definePrompt({
   output: {schema: MatchUserWithCelebrityOutputSchema},
   prompt: `You are an AI that matches users with celebrities based on their photo and birth information. The output must be in Korean.
 
-Analyze the user's photo to identify a face. The photo should be a clear, frontal shot, without heavy shadows, where facial features (eyes, nose, mouth) are distinct. Compare the identified facial features to a database of celebrity faces.
+Analyze the user's photo to identify a face. Compare the identified facial features to a database of celebrity faces.
 Consider personality traits derived from the user's astrology data (birth date, time, and location).
 Evaluate overall fortune patterns based on astrological data.
 Calculate an overall match score based on facial features, personality traits, and fortune patterns.
 Find a publicly available, high-quality photo URL for the matched celebrity.
 
-IMPORTANT: If you cannot detect a clear, frontal face in the photo, you MUST return the following values:
-- celebrityMatch: "얼굴 인식 불가"
-- matchPercentage: 0
-- fortuneSimilarity: "사진에서 얼굴을 찾을 수 없습니다. 더 선명한 정면 사진을 사용하거나 다른 사진으로 시도해 보세요."
-- celebrityPhotoUrl: "https://placehold.co/400x400.png"
+If you cannot detect a face, you should try your best to find a match. If it is absolutely impossible, return "얼굴 인식 불가" for the celebrityMatch, 0 for the matchPercentage, an explanation in fortuneSimilarity, and a placeholder image for celebrityPhotoUrl.
 
 User Photo: {{media url=photoDataUri}}
 Birth Date: {{{birthDate}}}
