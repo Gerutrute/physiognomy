@@ -24,18 +24,17 @@ export default function Home() {
       if (result) {
         const isFaceRecognitionFailure = result.match.celebrityMatch === '얼굴 인식 불가';
         
-        // 얼굴 인식 실패 시 사용자에게 알립니다.
+        // Notify user on face recognition failure.
         if (isFaceRecognitionFailure) {
           toast({
             variant: 'destructive',
             title: '얼굴 인식 실패',
             description: result.match.fortuneSimilarity,
           });
-          // 결과는 계속 보여줍니다.
         }
 
-        // 시각화 데이터 생성만 실패한 경우, 부분 결과를 보여줍니다.
-        if (!result.visualizations) {
+        // Notify user if visualization data failed but we have a match.
+        if (!isFaceRecognitionFailure && !result.visualizations) {
             toast({
                 variant: 'default',
                 title: '부분 결과 생성',
@@ -47,7 +46,7 @@ export default function Home() {
         setView('results');
 
       } else {
-        // getAstrologyReport가 null을 반환한 최악의 경우
+        // getAstrologyReport returned null, a critical failure
         throw new Error('결과를 생성하는 데 실패했습니다. AI 모델이 응답하지 않았거나 네트워크 문제가 발생했을 수 있습니다. 잠시 후 다시 시도해 주세요.');
       }
     } catch (error) {

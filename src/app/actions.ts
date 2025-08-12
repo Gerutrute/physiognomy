@@ -24,64 +24,43 @@ export async function getAstrologyReport(
         matchResult = null; // Mark as failed
     }
     
-    // 얼굴 인식이 실패한 경우 (matchResult가 null)
-    if (!matchResult || matchResult.celebrityMatch === '얼굴 인식 불가') {
-      const visualizations = await generateAstrologicalVisualizations({
-          birthDate: birthDateStr,
-          birthTime: userInput.birthTime,
-          birthLocation: userInput.birthLocation,
-          matchedCelebrity: '',
-      });
-
-      const failedMatchResult = {
+    // If matching fails for any reason, create a default "failure" object
+    if (!matchResult) {
+      matchResult = {
         celebrityMatch: '얼굴 인식 불가',
         matchPercentage: 0,
         fortuneSimilarity: '사진에서 얼굴을 찾을 수 없거나 분석 중 오류가 발생했습니다. 다른 사진으로 시도해 보세요.',
         celebrityPhotoUrl: 'https://placehold.co/400x400.png'
       };
-      
-      return {
-          match: failedMatchResult,
-          visualizations: visualizations,
-          userInput,
-      }
     }
+    
+    const isFaceRecognitionFailure = matchResult.celebrityMatch === '얼굴 인식 불가';
 
-
-    // 얼굴 인식이 성공했을 때만 시각화 데이터를 요청합니다.
+    // Generate visualizations
     let vizResult = null;
     try {
         vizResult = await generateAstrologicalVisualizations({
             birthDate: birthDateStr,
             birthTime: userInput.birthTime,
             birthLocation: userInput.birthLocation,
-            matchedCelebrity: matchResult.celebrityMatch,
+            // Pass celebrity name if successful, otherwise empty string
+            matchedCelebrity: isFaceRecognitionFailure ? '' : matchResult.celebrityMatch,
         });
     } catch(error) {
         console.error('Error in generateAstrologicalVisualizations flow:', error);
-        vizResult = null; // Mark as failed
-    }
-
-    // 시각화 데이터 생성에 실패하더라도, 매칭 결과는 보여주기 위해 null 대신 기본 객체를 반환합니다.
-    if (!vizResult) {
-        console.error('Failed to get visualization result from AI.');
-        return {
-          match: matchResult,
-          visualizations: null,
-          userInput,
-        };
+        vizResult = null; // Mark as failed, but we can still return the match result
     }
     
-    // 모든 데이터가 성공적으로 생성된 경우
+    // Always return a result object, even if parts of it failed.
     return {
       match: matchResult,
-      visualizations: vizResult,
+      visualizations: vizResult, // This can be null
       userInput,
     };
 
   } catch (error) {
-    console.error('Error generating astrology report:', error);
-    // 예기치 않은 최상위 오류 발생 시 null 반환
+    console.error('Critical error in getAstrologyReport:', error);
+    // This top-level catch is for truly unexpected errors.
     return null;
   }
 }
