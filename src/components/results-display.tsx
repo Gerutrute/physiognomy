@@ -86,6 +86,8 @@ const StatChart = ({ title, data, type }: { title: string; data: { label: string
 export function ResultsDisplay({ data, onReset }: ResultsDisplayProps) {
   const getInitials = (name: string) => name ? name.charAt(0).toUpperCase() : '?';
 
+  const isFaceRecognitionFailure = data.match.celebrityMatch === '얼굴 인식 불가';
+
   return (
     <div className="container mx-auto max-w-4xl py-8 md:py-12">
       <Button onClick={onReset} variant="ghost" className="mb-8">
@@ -95,41 +97,43 @@ export function ResultsDisplay({ data, onReset }: ResultsDisplayProps) {
 
       <div className="space-y-8">
         {/* Celebrity Match Card */}
-        <Card className="overflow-hidden shadow-lg">
-          <CardHeader className="text-center">
-            <CardTitle className="font-headline text-3xl md:text-4xl text-primary">
-              당신과 꼭 닮은 연예인은...
-            </CardTitle>
-            <CardDescription className="text-lg">
-              얼굴, 성격, 운세 패턴을 분석한 결과입니다.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid md:grid-cols-3 items-center gap-8 text-center">
-            <div className="flex flex-col items-center gap-2">
-              <Avatar className="w-24 h-24 border-4 border-muted">
-                <AvatarImage src={data.userInput.photoDataUri} alt={data.userInput.name} data-ai-hint="portrait person" />
-                <AvatarFallback className="text-3xl bg-secondary">{getInitials(data.userInput.name)}</AvatarFallback>
-              </Avatar>
-              <h3 className="text-lg font-bold">{data.userInput.name}</h3>
-            </div>
-            
-            <div className="flex flex-col items-center">
-                <p className="text-sm text-muted-foreground">일치율</p>
-                <p className="font-headline text-6xl font-bold text-accent">
-                    {data.match.matchPercentage}%
-                </p>
-                <div className="text-sm text-muted-foreground mt-2" dangerouslySetInnerHTML={{ __html: data.match.fortuneSimilarity.replace(/\n/g, '<br />') }} />
-            </div>
+        {!isFaceRecognitionFailure && (
+          <Card className="overflow-hidden shadow-lg">
+            <CardHeader className="text-center">
+              <CardTitle className="font-headline text-3xl md:text-4xl text-primary">
+                당신과 꼭 닮은 연예인은...
+              </CardTitle>
+              <CardDescription className="text-lg">
+                얼굴, 성격, 운세 패턴을 분석한 결과입니다.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid md:grid-cols-3 items-center gap-8 text-center">
+              <div className="flex flex-col items-center gap-2">
+                <Avatar className="w-24 h-24 border-4 border-muted">
+                  <AvatarImage src={data.userInput.photoDataUri} alt={data.userInput.name} data-ai-hint="portrait person" />
+                  <AvatarFallback className="text-3xl bg-secondary">{getInitials(data.userInput.name)}</AvatarFallback>
+                </Avatar>
+                <h3 className="text-lg font-bold">{data.userInput.name}</h3>
+              </div>
+              
+              <div className="flex flex-col items-center">
+                  <p className="text-sm text-muted-foreground">일치율</p>
+                  <p className="font-headline text-6xl font-bold text-accent">
+                      {data.match.matchPercentage}%
+                  </p>
+                  <div className="text-sm text-muted-foreground mt-2" dangerouslySetInnerHTML={{ __html: data.match.fortuneSimilarity.replace(/\n/g, '<br />') }} />
+              </div>
 
-            <div className="flex flex-col items-center gap-2">
-               <Avatar className="w-24 h-24 border-4 border-accent">
-                 <AvatarImage src={data.match.celebrityPhotoUrl} alt={data.match.celebrityMatch} data-ai-hint="celebrity portrait" />
-                <AvatarFallback className="text-3xl bg-accent/20 text-accent">{getInitials(data.match.celebrityMatch)}</AvatarFallback>
-              </Avatar>
-              <h3 className="text-lg font-bold">{data.match.celebrityMatch}</h3>
-            </div>
-          </CardContent>
-        </Card>
+              <div className="flex flex-col items-center gap-2">
+                 <Avatar className="w-24 h-24 border-4 border-accent">
+                   <AvatarImage src={data.match.celebrityPhotoUrl} alt={data.match.celebrityMatch} data-ai-hint="celebrity portrait" />
+                  <AvatarFallback className="text-3xl bg-accent/20 text-accent">{getInitials(data.match.celebrityMatch)}</AvatarFallback>
+                </Avatar>
+                <h3 className="text-lg font-bold">{data.match.celebrityMatch}</h3>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {data.visualizations && (
           <>
@@ -140,7 +144,10 @@ export function ResultsDisplay({ data, onReset }: ResultsDisplayProps) {
                     📖 당신의 운명 이야기
                  </CardTitle>
                  <CardDescription>
-                    AI 점성술사가 {data.match.celebrityMatch}님과의 비교를 통해 당신의 운명을 해석했습니다.
+                    {isFaceRecognitionFailure 
+                      ? "AI 점성술사가 당신의 운명을 해석했습니다."
+                      : `AI 점성술사가 ${data.match.celebrityMatch}님과의 비교를 통해 당신의 운명을 해석했습니다.`
+                    }
                  </CardDescription>
                </CardHeader>
                <CardContent className="text-lg leading-relaxed prose prose-p:text-foreground">

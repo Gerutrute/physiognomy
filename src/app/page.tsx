@@ -24,19 +24,18 @@ export default function Home() {
       if (result) {
         const isFaceRecognitionFailure = result.match.celebrityMatch === '얼굴 인식 불가';
         
-        // 얼굴 인식 실패 시 사용자에게 알리고 폼으로 돌아가게 합니다.
+        // 얼굴 인식 실패 시 사용자에게 알립니다.
         if (isFaceRecognitionFailure) {
           toast({
             variant: 'destructive',
             title: '얼굴 인식 실패',
             description: result.match.fortuneSimilarity,
           });
-          setView('form'); // 폼으로 돌아가서 다른 사진을 업로드 하도록 유도
-          return; // 여기서 함수 실행을 중단
+          // 결과는 계속 보여줍니다.
         }
 
         // 시각화 데이터 생성만 실패한 경우, 부분 결과를 보여줍니다.
-        if (!result.visualizations && !isFaceRecognitionFailure) {
+        if (!result.visualizations) {
             toast({
                 variant: 'default',
                 title: '부분 결과 생성',
