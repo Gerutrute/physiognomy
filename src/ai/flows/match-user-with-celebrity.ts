@@ -23,9 +23,10 @@ const MatchUserWithCelebrityInputSchema = z.object({
 export type MatchUserWithCelebrityInput = z.infer<typeof MatchUserWithCelebrityInputSchema>;
 
 const MatchUserWithCelebrityOutputSchema = z.object({
-  celebrityMatch: z.string().describe('The name of the celebrity the user is most similar to.'),
-  matchPercentage: z.number().describe('The percentage of similarity between the user and the celebrity.'),
-  fortuneSimilarity: z.string().describe('A description of the similarities in fortune patterns.'),
+  celebrityMatch: z.string().describe('사용자와 가장 유사한 연예인의 이름.'),
+  matchPercentage: z.number().describe('사용자와 연예인의 유사도 퍼센트.'),
+  fortuneSimilarity: z.string().describe('운세 패턴의 유사성에 대한 설명.'),
+  celebrityPhotoUrl: z.string().url().describe('일치하는 연예인의 사진 URL.'),
 });
 export type MatchUserWithCelebrityOutput = z.infer<typeof MatchUserWithCelebrityOutputSchema>;
 
@@ -37,21 +38,22 @@ const prompt = ai.definePrompt({
   name: 'matchUserWithCelebrityPrompt',
   input: {schema: MatchUserWithCelebrityInputSchema},
   output: {schema: MatchUserWithCelebrityOutputSchema},
-  prompt: `You are an AI that matches users with celebrities based on their photo and birth information.
+  prompt: `You are an AI that matches users with celebrities based on their photo and birth information. The output must be in Korean.
 
 Analyze the user's photo and compare their facial features to a database of celebrity faces.
 Consider personality traits derived from the user's astrology data (birth date, time, and location).
 Evaluate overall fortune patterns based on astrological data.
 Calculate an overall match score based on facial features, personality traits, and fortune patterns.
+Find a publicly available, high-quality photo URL for the matched celebrity.
 
 User Photo: {{media url=photoDataUri}}
 Birth Date: {{{birthDate}}}
 Birth Time: {{{birthTime}}}
 Birth Location: {{{birthLocation}}}
 
-Based on this information, determine the celebrity the user is most like and provide a match percentage and a description of the similarities in their fortune patterns.
+Based on this information, determine the celebrity the user is most like and provide a match percentage, a description of the similarities in their fortune patterns in Korean, and the celebrity's photo URL.
 
-Return the celebrityMatch, matchPercentage, and fortuneSimilarity in the proper JSON format.
+Return the celebrityMatch, matchPercentage, fortuneSimilarity, and celebrityPhotoUrl in the proper JSON format.
 `,
 });
 

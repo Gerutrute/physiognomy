@@ -21,7 +21,7 @@ const InterpretAstrologicalDataInputSchema = z.object({
 export type InterpretAstrologicalDataInput = z.infer<typeof InterpretAstrologicalDataInputSchema>;
 
 const InterpretAstrologicalDataOutputSchema = z.object({
-  interpretation: z.string().describe('A storytelling-based interpretation of the user\u0027s astrological data, relating it to the matched celebrity.\n'),
+  interpretation: z.string().describe('A storytelling-based interpretation of the user\u0027s astrological data, relating it to the matched celebrity, in Korean.\n'),
 });
 export type InterpretAstrologicalDataOutput = z.infer<typeof InterpretAstrologicalDataOutputSchema>;
 
@@ -33,7 +33,7 @@ const prompt = ai.definePrompt({
   name: 'interpretAstrologicalDataPrompt',
   input: {schema: InterpretAstrologicalDataInputSchema},
   output: {schema: InterpretAstrologicalDataOutputSchema},
-  prompt: `You are an expert astrologer and storyteller. You will provide a storytelling-based interpretation of the user\u0027s astrological data, relating it to the matched celebrity.
+  prompt: `You are an expert astrologer and storyteller. You will provide a storytelling-based interpretation of the user\u0027s astrological data, relating it to the matched celebrity. The output must be in Korean.
 
 User Birth Date: {{{birthDate}}}
 User Birth Time: {{{birthTime}}}
@@ -42,7 +42,7 @@ Matched Celebrity: {{{matchedCelebrity}}}
 Celebrity Astrological Data: {{{celebrityAstrologicalData}}}
 User Astrological Data: {{{userAstrologicalData}}}
 
-Based on this information, create a compelling narrative that highlights the user\u0027s potential and destiny, drawing parallels to the matched celebrity\u0027s achievements.  For example, \"Like {{{matchedCelebrity}}}, who also shares similar astrological traits, you possess the potential to become a trailblazer in your field. If you had debuted at the same time, you would have shined like {{{matchedCelebrity}}}.\"  The interpretation should be engaging and insightful.
+Based on this information, create a compelling narrative that highlights the user\u0027s potential and destiny, drawing parallels to the matched celebrity\u0027s achievements.  For example, \"{{{matchedCelebrity}}}님과 비슷한 별자리를 가진 당신은, 분야에서 선구자가 될 잠재력을 가지고 있습니다. 만약 같은 시대에 데뷔했다면, {{{matchedCelebrity}}}님처럼 빛났을 것입니다.\"  The interpretation should be engaging and insightful, and in Korean.
 `,
 });
 
