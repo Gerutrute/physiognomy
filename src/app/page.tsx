@@ -20,18 +20,27 @@ export default function Home() {
     setView('loading');
     try {
       const result = await getAstrologyReport(data);
+
       if (result) {
+        // 얼굴 인식 실패 시 처리
         if (result.match.celebrityMatch === '얼굴 인식 불가') {
           toast({
             variant: 'destructive',
             title: '얼굴 인식 실패',
             description: result.match.fortuneSimilarity,
           });
-          setView('form');
+          setView('form'); // 폼으로 되돌아감
           return;
         }
+
+        // 시각화 데이터 생성 실패 시 처리 (예: 얼굴 인식은 성공했으나 다음 단계 실패)
+        if (!result.visualizations) {
+            throw new Error('점성술 데이터를 생성하는 데 실패했습니다. 잠시 후 다시 시도해 주세요.');
+        }
+
         setReportData(result);
         setView('results');
+
       } else {
         throw new Error('결과를 생성하는 데 실패했습니다. AI 모델이 응답하지 않았거나 네트워크 문제가 발생했을 수 있습니다. 잠시 후 다시 시도해 주세요.');
       }
@@ -61,8 +70,8 @@ export default function Home() {
       </div>
 
       <div className={`w-full transition-opacity duration-500 ${view === 'results' ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
-        {view === 'results' && reportData && (
-          <ResultsDisplay data={reportData} onReset={handleReset} />
+        {view === 'results' && reportData && reportData.visualizations && (
+          <ResultsDisplay data={{...reportData, visualizations: reportData.visualizations}} onReset={handleReset} />
         )}
       </div>
     </div>

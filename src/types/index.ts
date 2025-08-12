@@ -11,6 +11,6 @@ export type UserInput = {
 
 export type ReportData = {
   match: MatchUserWithCelebrityOutput;
-  visualizations: GenerateAstrologicalVisualizationsOutput;
+  visualizations: GenerateAstrologicalVisualizationsOutput | null;
   userInput: UserInput;
 };
