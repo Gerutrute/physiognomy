@@ -48,7 +48,9 @@ export async function getAstrologyReport(
         });
     } catch(error) {
         console.error('Error in generateAstrologicalVisualizations flow:', error);
-        vizResult = null; // Mark as failed, but we can still return the match result
+        // Do not crash the app, visualizations can be null.
+        // The UI will handle the case where vizResult is null.
+        vizResult = null;
     }
     
     // Always return a result object, even if parts of it failed.
