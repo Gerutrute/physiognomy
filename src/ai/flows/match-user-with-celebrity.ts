@@ -23,10 +23,10 @@ const MatchUserWithCelebrityInputSchema = z.object({
 export type MatchUserWithCelebrityInput = z.infer<typeof MatchUserWithCelebrityInputSchema>;
 
 const MatchUserWithCelebrityOutputSchema = z.object({
-  celebrityMatch: z.string().describe('사용자와 가장 유사한 연예인의 이름.'),
-  matchPercentage: z.number().describe('사용자와 연예인의 유사도 퍼센트.'),
-  fortuneSimilarity: z.string().describe('운세 패턴의 유사성에 대한 설명.'),
-  celebrityPhotoUrl: z.string().url().describe('일치하는 연예인의 사진 URL.'),
+  celebrityMatch: z.string().describe('사용자와 가장 유사한 연예인의 이름. 얼굴을 인식할 수 없는 경우 "얼굴 인식 불가"를 반환합니다.'),
+  matchPercentage: z.number().describe('사용자와 연예인의 유사도 퍼센트. 얼굴을 인식할 수 없는 경우 0을 반환합니다.'),
+  fortuneSimilarity: z.string().describe('운세 패턴의 유사성에 대한 설명. 얼굴을 인식할 수 없는 경우 "사진에서 얼굴을 찾을 수 없습니다. 정면 사진을 사용해 보세요."를 반환합니다.'),
+  celebrityPhotoUrl: z.string().url().describe('일치하는 연예인의 사진 URL. 얼굴을 인식할 수 없는 경우, 자리 표시자 이미지 URL을 반환합니다.'),
 });
 export type MatchUserWithCelebrityOutput = z.infer<typeof MatchUserWithCelebrityOutputSchema>;
 
@@ -45,6 +45,12 @@ Consider personality traits derived from the user's astrology data (birth date, 
 Evaluate overall fortune patterns based on astrological data.
 Calculate an overall match score based on facial features, personality traits, and fortune patterns.
 Find a publicly available, high-quality photo URL for the matched celebrity.
+
+IMPORTANT: If you cannot detect a face in the photo, you MUST return the following values:
+- celebrityMatch: "얼굴 인식 불가"
+- matchPercentage: 0
+- fortuneSimilarity: "사진에서 얼굴을 찾을 수 없습니다. 정면 사진을 사용해 보세요."
+- celebrityPhotoUrl: "https://placehold.co/400x400.png"
 
 User Photo: {{media url=photoDataUri}}
 Birth Date: {{{birthDate}}}

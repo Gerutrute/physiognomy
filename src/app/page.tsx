@@ -21,17 +21,27 @@ export default function Home() {
     try {
       const result = await getAstrologyReport(data);
       if (result) {
+        if (result.match.celebrityMatch === '얼굴 인식 불가') {
+          toast({
+            variant: 'destructive',
+            title: '얼굴 인식 실패',
+            description: result.match.fortuneSimilarity,
+          });
+          setView('form');
+          return;
+        }
         setReportData(result);
         setView('results');
       } else {
-        throw new Error('결과를 생성하는 데 실패했습니다.');
+        throw new Error('결과를 생성하는 데 실패했습니다. AI 모델이 응답하지 않았습니다.');
       }
     } catch (error) {
       console.error(error);
+      const errorMessage = error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다.";
       toast({
         variant: "destructive",
         title: "오류 발생",
-        description: "점성술 보고서를 생성하는 동안 오류가 발생했습니다. 나중에 다시 시도해주세요.",
+        description: `점성술 보고서를 생성하는 동안 오류가 발생했습니다: ${errorMessage}`,
       });
       setView('form');
     }
