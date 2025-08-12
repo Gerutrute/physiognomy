@@ -12,22 +12,43 @@ export async function getAstrologyReport(
   try {
     const birthDateStr = format(userInput.birthDate, 'yyyy-MM-dd');
 
-    const [matchResult, vizResult] = await Promise.all([
-      matchUserWithCelebrity({
-        photoDataUri: userInput.photoDataUri,
-        birthDate: birthDateStr,
-        birthTime: userInput.birthTime,
-        birthLocation: userInput.birthLocation,
-      }),
-      generateAstrologicalVisualizations({
-        birthDate: birthDateStr,
-        birthTime: userInput.birthTime,
-        birthLocation: userInput.birthLocation,
-      }),
-    ]);
+    const matchResult = await matchUserWithCelebrity({
+      photoDataUri: userInput.photoDataUri,
+      birthDate: birthDateStr,
+      birthTime: userInput.birthTime,
+      birthLocation: userInput.birthLocation,
+    });
 
-    if (!matchResult || !vizResult) {
-      throw new Error('Failed to get match or visualization results');
+    if (!matchResult) {
+      throw new Error('Failed to get match result');
+    }
+
+    // Handle face recognition failure case gracefully
+    if (matchResult.celebrityMatch === '얼굴 인식 불가') {
+       return {
+        match: matchResult,
+        visualizations: {
+          fortuneCurve: [],
+          wealthIndex: [],
+          affectionIndex: [],
+          healthIndex: [],
+          careerPersona: '',
+        },
+        interpretation: {
+          interpretation: '',
+        },
+        userInput,
+      };
+    }
+
+    const vizResult = await generateAstrologicalVisualizations({
+      birthDate: birthDateStr,
+      birthTime: userInput.birthTime,
+      birthLocation: userInput.birthLocation,
+    });
+
+    if (!vizResult) {
+      throw new Error('Failed to get visualization results');
     }
 
     const interpretationResult = await interpretAstrologicalData({
