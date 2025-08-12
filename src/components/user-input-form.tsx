@@ -281,39 +281,39 @@ export function UserInputForm({ onSubmit }: UserInputFormProps) {
                   <FormItem>
                     <FormLabel>정면 사진 업로드</FormLabel>
                     <FormControl>
-                      <Button 
-                        asChild 
-                        variant="outline" 
-                        className="w-full cursor-pointer"
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        <div>
+                      <>
+                        <input
+                          type="file"
+                          accept="image/png, image/jpeg, image/webp"
+                          className="hidden"
+                          ref={fileInputRef}
+                          onChange={(event) => {
+                            const file = event.target.files?.[0];
+                            if (file) {
+                              if (file.size > 4 * 1024 * 1024) { // 4MB limit
+                                toast({
+                                  variant: "destructive",
+                                  title: "파일 크기 초과",
+                                  description: "사진 파일은 4MB를 초과할 수 없습니다.",
+                                });
+                                return;
+                              }
+                              onChange(file);
+                              setFileName(file.name);
+                            }
+                          }}
+                          {...rest}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
                           <Upload className="mr-2 h-4 w-4" />
                           <span>{fileName || '사진 파일 선택'}</span>
-                          <input 
-                            type="file"
-                            accept="image/png, image/jpeg, image/webp"
-                            className="hidden"
-                            ref={fileInputRef}
-                            onChange={(event) => {
-                                const file = event.target.files?.[0];
-                                if (file) {
-                                    if (file.size > 4 * 1024 * 1024) { // 4MB limit
-                                        toast({
-                                            variant: "destructive",
-                                            title: "파일 크기 초과",
-                                            description: "사진 파일은 4MB를 초과할 수 없습니다.",
-                                        });
-                                        return;
-                                    }
-                                    onChange(file);
-                                    setFileName(file.name);
-                                }
-                            }}
-                            {...rest}
-                          />
-                        </div>
-                      </Button>
+                        </Button>
+                      </>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
