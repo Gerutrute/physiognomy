@@ -16,9 +16,9 @@ const MatchUserWithCelebrityInputSchema = z.object({
     .describe(
       "A photo of the user, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
-  birthDate: z.string().describe('The user\'s birth date (YYYY-MM-DD).'),
-  birthTime: z.string().describe('The user\'s birth time (HH:MM).'),
-  birthLocation: z.string().describe('The user\'s birth location.'),
+  birthDate: z.string().describe("The user's birth date (YYYY-MM-DD)."),
+  birthTime: z.string().describe("The user's birth time (HH:MM)."),
+  birthLocation: z.string().describe("The user's birth location."),
 });
 export type MatchUserWithCelebrityInput = z.infer<typeof MatchUserWithCelebrityInputSchema>;
 
@@ -49,7 +49,7 @@ Find a publicly available, high-quality photo URL for the matched celebrity.
 IMPORTANT: If you cannot detect a face in the photo, you MUST return the following values:
 - celebrityMatch: "얼굴 인식 불가"
 - matchPercentage: 0
-- fortuneSimilarity: "사진에서 얼굴을 찾을 수 없습니다. 정면 사진을 사용해 보세요."
+- fortuneSimilarity: "사진에서 얼굴을 찾을 수 없습니다. 더 선명한 정면 사진을 사용하거나 다른 사진으로 시도해 보세요."
 - celebrityPhotoUrl: "https://placehold.co/400x400.png"
 
 User Photo: {{media url=photoDataUri}}
