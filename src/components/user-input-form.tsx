@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -62,6 +62,7 @@ export function UserInputForm({ onSubmit }: UserInputFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fileName, setFileName] = useState('');
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -73,22 +74,6 @@ export function UserInputForm({ onSubmit }: UserInputFormProps) {
       interests: '',
     },
   });
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > 4 * 1024 * 1024) { // 4MB limit
-        toast({
-          variant: "destructive",
-          title: "파일 크기 초과",
-          description: "사진 파일은 4MB를 초과할 수 없습니다.",
-        });
-        return;
-      }
-      form.setValue('photo', file);
-      setFileName(file.name);
-    }
-  };
 
   const processSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
@@ -292,15 +277,41 @@ export function UserInputForm({ onSubmit }: UserInputFormProps) {
               <FormField
                 control={form.control}
                 name="photo"
-                render={({ field }) => (
+                render={({ field: { onChange, value, ...rest } }) => (
                   <FormItem>
                     <FormLabel>정면 사진 업로드</FormLabel>
                     <FormControl>
-                      <Button asChild variant="outline" className="w-full cursor-pointer">
+                      <Button 
+                        asChild 
+                        variant="outline" 
+                        className="w-full cursor-pointer"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
                         <div>
                           <Upload className="mr-2 h-4 w-4" />
                           <span>{fileName || '사진 파일 선택'}</span>
-                          <input type="file" accept="image/png, image/jpeg, image/webp" className="hidden" onChange={handleFileChange} />
+                          <input 
+                            type="file"
+                            accept="image/png, image/jpeg, image/webp"
+                            className="hidden"
+                            ref={fileInputRef}
+                            onChange={(event) => {
+                                const file = event.target.files?.[0];
+                                if (file) {
+                                    if (file.size > 4 * 1024 * 1024) { // 4MB limit
+                                        toast({
+                                            variant: "destructive",
+                                            title: "파일 크기 초과",
+                                            description: "사진 파일은 4MB를 초과할 수 없습니다.",
+                                        });
+                                        return;
+                                    }
+                                    onChange(file);
+                                    setFileName(file.name);
+                                }
+                            }}
+                            {...rest}
+                          />
                         </div>
                       </Button>
                     </FormControl>
